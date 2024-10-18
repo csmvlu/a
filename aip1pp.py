@@ -63,6 +63,101 @@ plt.legend(handles=[
 # Show the plot
 plt.show()
 
+
+
+
+
+
+import networkx as nx
+import matplotlib.pyplot as plt
+from collections import deque
+
+# Create a graph dataset
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+
+# Visualize the graph using NetworkX, with color coding for BFS and IDFS paths
+def draw_graph(graph, bfs_path=None, idfs_path=None):
+    G = nx.DiGraph()
+    
+    for node, neighbors in graph.items():
+        for neighbor in neighbors:
+            G.add_edge(node, neighbor)
+
+    pos = nx.spring_layout(G)  # Position layout for nodes
+    
+    # Draw base graph
+    nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=2000, font_weight='bold', font_size=12, edge_color='gray', arrows=True)
+    
+    # Highlight BFS path in blue
+    if bfs_path:
+        bfs_edges = [(bfs_path[i], bfs_path[i+1]) for i in range(len(bfs_path)-1)]
+        nx.draw_networkx_edges(G, pos, edgelist=bfs_edges, edge_color='blue', width=3)
+        nx.draw_networkx_nodes(G, pos, nodelist=bfs_path, node_color='blue', node_size=2000)
+    
+    # Highlight IDFS path in red
+    if idfs_path:
+        idfs_edges = [(idfs_path[i], idfs_path[i+1]) for i in range(len(idfs_path)-1)]
+        nx.draw_networkx_edges(G, pos, edgelist=idfs_edges, edge_color='red', width=3, style='dashed')
+        nx.draw_networkx_nodes(G, pos, nodelist=idfs_path, node_color='red', node_size=2000)
+    
+    plt.title("Graph with BFS (Blue) and IDFS (Red) Paths")
+    plt.show()
+
+# Implement Breadth First Search (BFS)
+def bfs(graph, start):
+    visited = []
+    queue = deque([start])
+    
+    while queue:
+        node = queue.popleft()
+        if node not in visited:
+            visited.append(node)
+            queue.extend([n for n in graph[node] if n not in visited])
+    
+    return visited
+
+# Implement Iterative Depth First Search (IDFS)
+def idfs(graph, start):
+    visited = []
+    stack = [start]
+    
+    while stack:
+        node = stack.pop()
+        if node not in visited:
+            visited.append(node)
+            stack.extend([n for n in reversed(graph[node]) if n not in visited])  # reverse for correct order
+    
+    return visited
+
+# Compare performance of BFS and IDFS
+def compare_algorithms(graph, start):
+    bfs_path = bfs(graph, start)
+    idfs_path = idfs(graph, start)
+    
+    print("Breadth First Search Order:", bfs_path)
+    print("Iterative Depth First Search Order:", idfs_path)
+    
+    # Visualize the graph with colored paths
+    draw_graph(graph, bfs_path=bfs_path, idfs_path=idfs_path)
+
+# Test the algorithms and compare them
+start_node = 'A'
+compare_algorithms(graph, start_node)
+
+
+
+
+
+
+
+
 print("A* Algorithm---------------------------------------------------------------------------------------------------------------------------------")
 import networkx as nx
 import matplotlib.pyplot as plt
